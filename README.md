@@ -1,8 +1,5 @@
 # Open Doc Router Python API library
 
-<!-- prettier-ignore -->
-[![PyPI version](https://img.shields.io/pypi/v/opendocrouter.svg?label=pypi%20(stable))](https://pypi.org/project/opendocrouter/)
-
 The Open Doc Router Python library provides convenient access to the Open Doc Router REST API from any Python 3.9+
 application. The library includes type definitions for all request params and response fields,
 and offers both synchronous and asynchronous clients powered by [httpx](https://github.com/encode/httpx).
@@ -16,12 +13,8 @@ The REST API documentation can be found on [developers.llamaindex.ai](https://de
 ## Installation
 
 ```sh
-# install from this staging repo
-pip install git+ssh://git@github.com/run-llama/opendocrouter-python.git
+pip install git+https://github.com/run-llama/opendocrouter-python.git
 ```
-
-> [!NOTE]
-> Once this package is [published to PyPI](https://www.stainless.com/docs/guides/publish), this will become: `pip install opendocrouter`
 
 ## Usage
 
@@ -81,8 +74,7 @@ By default, the async client uses `httpx` for HTTP requests. However, for improv
 You can enable this by installing `aiohttp`:
 
 ```sh
-# install from this staging repo
-pip install 'opendocrouter[aiohttp] @ git+ssh://git@github.com/run-llama/opendocrouter-python.git'
+pip install 'opendocrouter[aiohttp] @ git+https://github.com/run-llama/opendocrouter-python.git'
 ```
 
 Then you can enable it by instantiating the client with `http_client=DefaultAioHttpClient()`:
@@ -156,6 +148,7 @@ Error codes are as follows:
 | 401         | `AuthenticationError`      |
 | 403         | `PermissionDeniedError`    |
 | 404         | `NotFoundError`            |
+| 409         | `ConflictError`            |
 | 422         | `UnprocessableEntityError` |
 | 429         | `RateLimitError`           |
 | >=500       | `InternalServerError`      |
@@ -190,6 +183,8 @@ By default requests time out after 1 minute. You can configure this with a `time
 which accepts a float or an [`httpx.Timeout`](https://www.python-httpx.org/advanced/timeouts/#fine-tuning-the-configuration) object:
 
 ```python
+import httpx
+
 from opendocrouter import OpenDocRouter
 
 # Configure the default for all requests:
@@ -356,25 +351,23 @@ with OpenDocRouter() as client:
 
 ## Versioning
 
-This package generally follows [SemVer](https://semver.org/spec/v2.0.0.html) conventions, though certain backwards-incompatible changes may be released as minor versions:
+This library is distributed only from this Git repository. It is not published to PyPI and has no
+releases, tags, or changelog, so `pip install git+https://...` always installs the current tip of the
+default branch. To pin an exact revision, append a commit SHA:
 
-1. Changes that only affect static types, without breaking runtime behavior.
-2. Changes to library internals which are technically public but not intended or documented for external use. _(Please open a GitHub issue to let us know if you are relying on such internals.)_
-3. Changes that we do not expect to impact the vast majority of users in practice.
+    pip install 'git+https://github.com/run-llama/opendocrouter-python.git@<commit-sha>'
 
-We take backwards-compatibility seriously and work hard to ensure you can rely on a smooth upgrade experience.
+Backwards-incompatible changes can land on the default branch, so pin a SHA if you need a stable surface.
 
 We are keen for your feedback; please open an [issue](https://www.github.com/run-llama/opendocrouter-python/issues) with questions, bugs, or suggestions.
 
-### Determining the installed version
+### Determining the installed revision
 
-If you've upgraded to the latest version but aren't seeing any new features you were expecting then your python environment is likely still using an older version.
+`opendocrouter.__version__` is a fixed placeholder (`0.0.1`) and never changes. Because the library
+is installed from git, use pip to see which commit you have:
 
-You can determine the version that is being used at runtime with:
-
-```py
-import opendocrouter
-print(opendocrouter.__version__)
+```sh
+pip freeze | grep opendocrouter
 ```
 
 ## Requirements
