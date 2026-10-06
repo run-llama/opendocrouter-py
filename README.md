@@ -1,6 +1,6 @@
 # OpenDocRouter Python API library
 
-The Open Doc Router Python library provides convenient access to the OpenDocRouter REST API from any Python 3.9+
+The OpenDocRouter Python library provides convenient access to the OpenDocRouter REST API from any Python 3.9+
 application. The library includes type definitions for all request params and response fields,
 and offers both synchronous and asynchronous clients powered by [httpx](https://github.com/encode/httpx).
 
