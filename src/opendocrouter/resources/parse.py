@@ -19,14 +19,15 @@ from .._response import (
 )
 from .._base_client import make_request_options
 from ..types.parse_record import ParseRecord
-from ..types.parse_create_response import ParseCreateResponse
 from ..types.parse_delete_response import ParseDeleteResponse
 
 __all__ = ["ParseResource", "AsyncParseResource"]
 
 
 class ParseResource(SyncAPIResource):
-    """Parse documents, synchronously or as async jobs."""
+    """
+    Parse documents, synchronously (up to 50 pages) or as async jobs (up to 500 pages).
+    """
 
     @cached_property
     def with_raw_response(self) -> ParseResourceWithRawResponse:
@@ -62,13 +63,13 @@ class ParseResource(SyncAPIResource):
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> ParseCreateResponse:
+    ) -> ParseRecord:
         """
         `mode: "sync"` (the default) parses the document in this request and returns 200
-        with every page, up to the model's `max_sync_pages`. `mode: "async"` returns 202
-        and parses up to 500 pages as a job; `GET /v1/parse/{id}?expand=markdown` has
-        the results. At most 5 async requests run at once per account, and at most 300
-        requests a minute.
+        with every page, up to the model's `max_sync_pages`. `mode: "async"`, which
+        needs `cache: true`, returns 202 and parses up to 500 pages as a job;
+        `GET /v1/parse/{id}?expand=markdown` has the results. At most 5 async requests
+        run at once per account, and at most 300 requests a minute.
 
         Admission holds the most the request could cost; it's released, less the actual
         charge, when the request finishes. Failed pages are free.
@@ -78,16 +79,19 @@ class ParseResource(SyncAPIResource):
 
           model: A model `id` from `GET /v1/models`.
 
-          cache: Keep ok pages for 24 hours and serve identical pages of the same document from
-              them for free. Defaults to false.
+          cache: Store the results, encrypted, for 24 hours: `GET /v1/parse/{id}?expand=markdown`
+              reads them and `DELETE /v1/parse/{id}` deletes them sooner. Pages your account
+              already has stored for the same document, model and `layout` are served from
+              them, free. Required for `async`. Defaults to false.
 
           layout: Add each ok page's `layout`: its elements, the markdown lines each one spans and
               where it's printed. Adds $0.20 per million tokens to pages whose layout comes
               back. Defaults to false.
 
-          mode: `sync` parses the document in this request and returns 200 with every page, up
-              to the model's `max_sync_pages`. `async` returns 202 with a `poll_url` and
-              parses it as a job, up to 500 pages. Defaults to `sync`.
+          mode: `sync` parses the document in this request and returns 200 with results for
+              every page, up to the model's `max_sync_pages`. `async` returns 202 parses it as
+              a job pollable on `GET /v1/parse/<id>`, up to 500 pages. It needs `cache: true`.
+              Defaults to `sync`.
 
           pages: 1-based pages and ranges. Defaults to every page. At most the model's
               `max_sync_pages` in sync mode, 500 in async mode.
@@ -116,7 +120,7 @@ class ParseResource(SyncAPIResource):
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
-            cast_to=ParseCreateResponse,
+            cast_to=ParseRecord,
         )
 
     def delete(
@@ -130,11 +134,10 @@ class ParseResource(SyncAPIResource):
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> ParseDeleteResponse:
-        """A running job stops before its next chunk.
-
-        Pages already parsed are still
-        charged. The request's status and cost stay available. A sync request stored
-        nothing, so this does nothing.
+        """
+        Deletes the results stored with `cache: true`, so they're also no longer served
+        from the cache. A running job stops before its next chunk. Pages already parsed
+        are still charged. The request's status and cost stay available.
 
         Args:
           id: The parse request's `id`.
@@ -176,9 +179,9 @@ class ParseResource(SyncAPIResource):
         progress. Then it returns every page, unless the expanded results are over 4 MB:
         then `has_more` is true, and you ask again with `cursor` set to `next_cursor`.
 
-        Markdown and layout are opt-in, with `expand`, and only async requests store
-        them, for 24 hours after they finish. Without it, this never returns document
-        text.
+        Markdown and layout are opt-in, with `expand`, and only requests sent with
+        `cache: true` store them, for 24 hours after they finish. Without `expand`, this
+        never returns document text.
 
         Args:
           id: The parse request's `id`.
@@ -186,7 +189,8 @@ class ParseResource(SyncAPIResource):
           cursor: The `next_cursor` of the previous response.
 
           expand: `markdown` adds each ok page's markdown, `layout` its layout (for requests sent
-              with `layout: true`), and `markdown,layout` both. Async requests only.
+              with `layout: true`), and `markdown,layout` both. For requests sent with
+              `cache: true`.
 
           extra_headers: Send extra headers
 
@@ -218,7 +222,9 @@ class ParseResource(SyncAPIResource):
 
 
 class AsyncParseResource(AsyncAPIResource):
-    """Parse documents, synchronously or as async jobs."""
+    """
+    Parse documents, synchronously (up to 50 pages) or as async jobs (up to 500 pages).
+    """
 
     @cached_property
     def with_raw_response(self) -> AsyncParseResourceWithRawResponse:
@@ -254,13 +260,13 @@ class AsyncParseResource(AsyncAPIResource):
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> ParseCreateResponse:
+    ) -> ParseRecord:
         """
         `mode: "sync"` (the default) parses the document in this request and returns 200
-        with every page, up to the model's `max_sync_pages`. `mode: "async"` returns 202
-        and parses up to 500 pages as a job; `GET /v1/parse/{id}?expand=markdown` has
-        the results. At most 5 async requests run at once per account, and at most 300
-        requests a minute.
+        with every page, up to the model's `max_sync_pages`. `mode: "async"`, which
+        needs `cache: true`, returns 202 and parses up to 500 pages as a job;
+        `GET /v1/parse/{id}?expand=markdown` has the results. At most 5 async requests
+        run at once per account, and at most 300 requests a minute.
 
         Admission holds the most the request could cost; it's released, less the actual
         charge, when the request finishes. Failed pages are free.
@@ -270,16 +276,19 @@ class AsyncParseResource(AsyncAPIResource):
 
           model: A model `id` from `GET /v1/models`.
 
-          cache: Keep ok pages for 24 hours and serve identical pages of the same document from
-              them for free. Defaults to false.
+          cache: Store the results, encrypted, for 24 hours: `GET /v1/parse/{id}?expand=markdown`
+              reads them and `DELETE /v1/parse/{id}` deletes them sooner. Pages your account
+              already has stored for the same document, model and `layout` are served from
+              them, free. Required for `async`. Defaults to false.
 
           layout: Add each ok page's `layout`: its elements, the markdown lines each one spans and
               where it's printed. Adds $0.20 per million tokens to pages whose layout comes
               back. Defaults to false.
 
-          mode: `sync` parses the document in this request and returns 200 with every page, up
-              to the model's `max_sync_pages`. `async` returns 202 with a `poll_url` and
-              parses it as a job, up to 500 pages. Defaults to `sync`.
+          mode: `sync` parses the document in this request and returns 200 with results for
+              every page, up to the model's `max_sync_pages`. `async` returns 202 parses it as
+              a job pollable on `GET /v1/parse/<id>`, up to 500 pages. It needs `cache: true`.
+              Defaults to `sync`.
 
           pages: 1-based pages and ranges. Defaults to every page. At most the model's
               `max_sync_pages` in sync mode, 500 in async mode.
@@ -308,7 +317,7 @@ class AsyncParseResource(AsyncAPIResource):
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
-            cast_to=ParseCreateResponse,
+            cast_to=ParseRecord,
         )
 
     async def delete(
@@ -322,11 +331,10 @@ class AsyncParseResource(AsyncAPIResource):
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> ParseDeleteResponse:
-        """A running job stops before its next chunk.
-
-        Pages already parsed are still
-        charged. The request's status and cost stay available. A sync request stored
-        nothing, so this does nothing.
+        """
+        Deletes the results stored with `cache: true`, so they're also no longer served
+        from the cache. A running job stops before its next chunk. Pages already parsed
+        are still charged. The request's status and cost stay available.
 
         Args:
           id: The parse request's `id`.
@@ -368,9 +376,9 @@ class AsyncParseResource(AsyncAPIResource):
         progress. Then it returns every page, unless the expanded results are over 4 MB:
         then `has_more` is true, and you ask again with `cursor` set to `next_cursor`.
 
-        Markdown and layout are opt-in, with `expand`, and only async requests store
-        them, for 24 hours after they finish. Without it, this never returns document
-        text.
+        Markdown and layout are opt-in, with `expand`, and only requests sent with
+        `cache: true` store them, for 24 hours after they finish. Without `expand`, this
+        never returns document text.
 
         Args:
           id: The parse request's `id`.
@@ -378,7 +386,8 @@ class AsyncParseResource(AsyncAPIResource):
           cursor: The `next_cursor` of the previous response.
 
           expand: `markdown` adds each ok page's markdown, `layout` its layout (for requests sent
-              with `layout: true`), and `markdown,layout` both. Async requests only.
+              with `layout: true`), and `markdown,layout` both. For requests sent with
+              `cache: true`.
 
           extra_headers: Send extra headers
 

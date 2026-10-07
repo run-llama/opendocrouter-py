@@ -14,5 +14,6 @@ class ParseGetParams(TypedDict, total=False):
     expand: str
     """
     `markdown` adds each ok page's markdown, `layout` its layout (for requests sent
-    with `layout: true`), and `markdown,layout` both. Async requests only.
+    with `layout: true`), and `markdown,layout` both. For requests sent with
+    `cache: true`.
     """

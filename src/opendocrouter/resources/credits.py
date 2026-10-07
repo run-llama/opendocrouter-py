@@ -51,7 +51,7 @@ class CreditsResource(SyncAPIResource):
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> Credits:
-        """Get the account's credit"""
+        """Get the account's credit details"""
         return self._get(
             "/v1/credits",
             options=make_request_options(
@@ -93,7 +93,7 @@ class AsyncCreditsResource(AsyncAPIResource):
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> Credits:
-        """Get the account's credit"""
+        """Get the account's credit details"""
         return await self._get(
             "/v1/credits",
             options=make_request_options(

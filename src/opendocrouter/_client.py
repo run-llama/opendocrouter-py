@@ -120,7 +120,9 @@ class OpenDocRouter(SyncAPIClient):
 
     @cached_property
     def parse(self) -> ParseResource:
-        """Parse documents, synchronously or as async jobs."""
+        """
+        Parse documents, synchronously (up to 50 pages) or as async jobs (up to 500 pages).
+        """
         from .resources.parse import ParseResource
 
         return ParseResource(self)
@@ -141,7 +143,6 @@ class OpenDocRouter(SyncAPIClient):
 
     @cached_property
     def models(self) -> ModelsResource:
-        """The models you can parse with, and their prices."""
         from .resources.models import ModelsResource
 
         return ModelsResource(self)
@@ -330,7 +331,9 @@ class AsyncOpenDocRouter(AsyncAPIClient):
 
     @cached_property
     def parse(self) -> AsyncParseResource:
-        """Parse documents, synchronously or as async jobs."""
+        """
+        Parse documents, synchronously (up to 50 pages) or as async jobs (up to 500 pages).
+        """
         from .resources.parse import AsyncParseResource
 
         return AsyncParseResource(self)
@@ -351,7 +354,6 @@ class AsyncOpenDocRouter(AsyncAPIClient):
 
     @cached_property
     def models(self) -> AsyncModelsResource:
-        """The models you can parse with, and their prices."""
         from .resources.models import AsyncModelsResource
 
         return AsyncModelsResource(self)
@@ -482,7 +484,9 @@ class OpenDocRouterWithRawResponse:
 
     @cached_property
     def parse(self) -> parse.ParseResourceWithRawResponse:
-        """Parse documents, synchronously or as async jobs."""
+        """
+        Parse documents, synchronously (up to 50 pages) or as async jobs (up to 500 pages).
+        """
         from .resources.parse import ParseResourceWithRawResponse
 
         return ParseResourceWithRawResponse(self._client.parse)
@@ -503,7 +507,6 @@ class OpenDocRouterWithRawResponse:
 
     @cached_property
     def models(self) -> models.ModelsResourceWithRawResponse:
-        """The models you can parse with, and their prices."""
         from .resources.models import ModelsResourceWithRawResponse
 
         return ModelsResourceWithRawResponse(self._client.models)
@@ -517,7 +520,9 @@ class AsyncOpenDocRouterWithRawResponse:
 
     @cached_property
     def parse(self) -> parse.AsyncParseResourceWithRawResponse:
-        """Parse documents, synchronously or as async jobs."""
+        """
+        Parse documents, synchronously (up to 50 pages) or as async jobs (up to 500 pages).
+        """
         from .resources.parse import AsyncParseResourceWithRawResponse
 
         return AsyncParseResourceWithRawResponse(self._client.parse)
@@ -538,7 +543,6 @@ class AsyncOpenDocRouterWithRawResponse:
 
     @cached_property
     def models(self) -> models.AsyncModelsResourceWithRawResponse:
-        """The models you can parse with, and their prices."""
         from .resources.models import AsyncModelsResourceWithRawResponse
 
         return AsyncModelsResourceWithRawResponse(self._client.models)
@@ -552,7 +556,9 @@ class OpenDocRouterWithStreamedResponse:
 
     @cached_property
     def parse(self) -> parse.ParseResourceWithStreamingResponse:
-        """Parse documents, synchronously or as async jobs."""
+        """
+        Parse documents, synchronously (up to 50 pages) or as async jobs (up to 500 pages).
+        """
         from .resources.parse import ParseResourceWithStreamingResponse
 
         return ParseResourceWithStreamingResponse(self._client.parse)
@@ -573,7 +579,6 @@ class OpenDocRouterWithStreamedResponse:
 
     @cached_property
     def models(self) -> models.ModelsResourceWithStreamingResponse:
-        """The models you can parse with, and their prices."""
         from .resources.models import ModelsResourceWithStreamingResponse
 
         return ModelsResourceWithStreamingResponse(self._client.models)
@@ -587,7 +592,9 @@ class AsyncOpenDocRouterWithStreamedResponse:
 
     @cached_property
     def parse(self) -> parse.AsyncParseResourceWithStreamingResponse:
-        """Parse documents, synchronously or as async jobs."""
+        """
+        Parse documents, synchronously (up to 50 pages) or as async jobs (up to 500 pages).
+        """
         from .resources.parse import AsyncParseResourceWithStreamingResponse
 
         return AsyncParseResourceWithStreamingResponse(self._client.parse)
@@ -608,7 +615,6 @@ class AsyncOpenDocRouterWithStreamedResponse:
 
     @cached_property
     def models(self) -> models.AsyncModelsResourceWithStreamingResponse:
-        """The models you can parse with, and their prices."""
         from .resources.models import AsyncModelsResourceWithStreamingResponse
 
         return AsyncModelsResourceWithStreamingResponse(self._client.models)

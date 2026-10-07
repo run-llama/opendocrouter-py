@@ -17,8 +17,10 @@ class ParseCreateParams(TypedDict, total=False):
 
     cache: bool
     """
-    Keep ok pages for 24 hours and serve identical pages of the same document from
-    them for free. Defaults to false.
+    Store the results, encrypted, for 24 hours: `GET /v1/parse/{id}?expand=markdown`
+    reads them and `DELETE /v1/parse/{id}` deletes them sooner. Pages your account
+    already has stored for the same document, model and `layout` are served from
+    them, free. Required for `async`. Defaults to false.
     """
 
     layout: bool
@@ -30,9 +32,10 @@ class ParseCreateParams(TypedDict, total=False):
 
     mode: Literal["sync", "async"]
     """
-    `sync` parses the document in this request and returns 200 with every page, up
-    to the model's `max_sync_pages`. `async` returns 202 with a `poll_url` and
-    parses it as a job, up to 500 pages. Defaults to `sync`.
+    `sync` parses the document in this request and returns 200 with results for
+    every page, up to the model's `max_sync_pages`. `async` returns 202 parses it as
+    a job pollable on `GET /v1/parse/<id>`, up to 500 pages. It needs `cache: true`.
+    Defaults to `sync`.
     """
 
     pages: str
@@ -57,7 +60,7 @@ class DocumentInlineDocument(TypedDict, total=False):
 
 class DocumentUploadDocument(TypedDict, total=False):
     upload_id: Required[str]
-    """From `POST /v1/uploads`."""
+    """An ID obtained from `POST /v1/uploads`."""
 
 
 Document: TypeAlias = Union[DocumentURLDocument, DocumentInlineDocument, DocumentUploadDocument]

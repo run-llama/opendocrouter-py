@@ -12,21 +12,111 @@ from .._models import BaseModel
 __all__ = [
     "ParseRecord",
     "Page",
-    "PageRecordOkPage",
-    "PageRecordOkPageUsage",
-    "PageRecordErrorPage",
-    "PageRecordErrorPageError",
+    "PageOkPage",
+    "PageOkPageUsage",
+    "PageOkPageLayout",
+    "PageOkPageLayoutPageLayoutOk",
+    "PageOkPageLayoutPageLayoutOkElement",
+    "PageOkPageLayoutPageLayoutOkElementBox",
+    "PageOkPageLayoutPageLayoutError",
+    "PageOkPageLayoutPageLayoutErrorError",
+    "PageErrorPage",
+    "PageErrorPageError",
     "Usage",
 ]
 
 
-class PageRecordOkPageUsage(BaseModel):
+class PageOkPageUsage(BaseModel):
     input_tokens: int
 
     output_tokens: int
 
 
-class PageRecordOkPage(BaseModel):
+class PageOkPageLayoutPageLayoutOkElementBox(BaseModel):
+    """Fractions of the page width and height, from the top left."""
+
+    h: float
+
+    w: float
+
+    x: float
+
+    y: float
+
+    r: Optional[float] = None
+    """Clockwise degrees about the box's centre, for text printed at an angle.
+
+    x, y, w and h are then the unrotated box.
+    """
+
+
+class PageOkPageLayoutPageLayoutOkElement(BaseModel):
+    boxes: List[PageOkPageLayoutPageLayoutOkElementBox]
+    """In reading order.
+
+    Empty when the element couldn't be placed; more than one when it's printed in
+    pieces, such as a paragraph that continues in the next column.
+    """
+
+    confidence: float
+
+    lines: Optional[List[object]] = None
+    """
+    First and last line of the page markdown, 0-based and inclusive, splitting on
+    "\n" only. Null for a picture the markdown doesn't mention.
+    """
+
+    type: Literal[
+        "title",
+        "section_header",
+        "text",
+        "list_item",
+        "table",
+        "picture",
+        "chart",
+        "formula",
+        "caption",
+        "footnote",
+        "page_header",
+        "page_footer",
+        "code",
+        "form",
+        "key_value",
+    ]
+
+
+class PageOkPageLayoutPageLayoutOk(BaseModel):
+    elements: List[PageOkPageLayoutPageLayoutOkElement]
+    """The markdown's elements in reading order, then pictures it doesn't mention."""
+
+    height: float
+
+    status: Literal["ok"]
+
+    width: float
+    """Points for a PDF page, pixels for an image."""
+
+
+class PageOkPageLayoutPageLayoutErrorError(BaseModel):
+    code: Literal["provider_error", "timeout", "unreadable_page", "at_capacity"]
+
+    message: str
+
+
+class PageOkPageLayoutPageLayoutError(BaseModel):
+    """The page's markdown is still there; layout isn't charged."""
+
+    error: PageOkPageLayoutPageLayoutErrorError
+
+    status: Literal["error"]
+
+
+PageOkPageLayout: TypeAlias = Annotated[
+    Union[PageOkPageLayoutPageLayoutOk, PageOkPageLayoutPageLayoutError], PropertyInfo(discriminator="status")
+]
+
+
+class PageOkPage(BaseModel):
     cached: bool
     """Served from the result cache, free."""
 
@@ -36,16 +126,22 @@ class PageRecordOkPage(BaseModel):
 
     status: Literal["ok"]
 
-    usage: PageRecordOkPageUsage
+    usage: PageOkPageUsage
 
-    layout: Optional[object] = None
-    """With `expand=layout`, for requests sent with `layout: true`."""
+    layout: Optional[PageOkPageLayout] = None
+    """
+    For requests sent with `layout: true`: in the POST response, or from GET with
+    `expand=layout`.
+    """
 
     markdown: Optional[str] = None
-    """With `expand=markdown` only."""
+    """Always in the POST response.
+
+    From `GET /v1/parse/{id}`, with `expand=markdown` only.
+    """
 
 
-class PageRecordErrorPageError(BaseModel):
+class PageErrorPageError(BaseModel):
     code: Literal[
         "provider_error",
         "rate_limited",
@@ -78,7 +174,7 @@ class PageRecordErrorPageError(BaseModel):
     """
 
     message: str
-    """With `expand=markdown`, the page's own message.
+    """The page's own message in the POST response, or from GET with `expand=markdown`.
 
     Otherwise the code's standard description.
     """
@@ -90,17 +186,17 @@ class PageRecordErrorPageError(BaseModel):
     """
 
 
-class PageRecordErrorPage(BaseModel):
+class PageErrorPage(BaseModel):
     charge_usd: Literal[0]
 
-    error: PageRecordErrorPageError
+    error: PageErrorPageError
 
     page: int
 
     status: Literal["error"]
 
 
-Page: TypeAlias = Annotated[Union[PageRecordOkPage, PageRecordErrorPage], PropertyInfo(discriminator="status")]
+Page: TypeAlias = Annotated[Union[PageOkPage, PageErrorPage], PropertyInfo(discriminator="status")]
 
 
 class Usage(BaseModel):
@@ -138,11 +234,7 @@ class ParseRecord(BaseModel):
     has_more: bool
 
     mode: Literal["sync", "async"]
-    """The request's `mode`.
-
-    `async` markdown is stored for `expand=markdown`; `sync` markdown is only in the
-    POST response.
-    """
+    """The request's `mode`."""
 
     model: str
 
@@ -154,16 +246,15 @@ class ParseRecord(BaseModel):
     page_count: int
 
     pages: List[Page]
-    """Empty while processing."""
 
     pages_done: int
 
     price_version: str
 
     results_expire_at: datetime
-    """When an async request's stored results are, or were, deleted.
+    """When the stored results are, or were, deleted.
 
-    Null for sync requests, and while processing.
+    Null while processing or when nothing was stored (like setting `cache: false`).
     """
 
     status: Literal["processing", "completed", "partial", "failed", "expired", "rejected"]
@@ -174,6 +265,3 @@ class ParseRecord(BaseModel):
 
     usage: Usage
     """Null until the request settles."""
-
-    poll_url: Optional[str] = None
-    """In the 202 response only."""
