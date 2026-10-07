@@ -1,17 +1,23 @@
-# OpenDocRouter Python API library
+# Open Doc Router Python API library
 
-The OpenDocRouter Python library provides convenient access to the OpenDocRouter REST API from any Python 3.9+
+<!-- prettier-ignore -->
+[![PyPI version](https://img.shields.io/pypi/v/opendocrouter.svg?label=pypi%20(stable))](https://pypi.org/project/opendocrouter/)
+
+The Open Doc Router Python library provides convenient access to the Open Doc Router REST API from any Python 3.9+
 application. The library includes type definitions for all request params and response fields,
 and offers both synchronous and asynchronous clients powered by [httpx](https://github.com/encode/httpx).
 
+It is generated with [Stainless](https://www.stainless.com/).
+
 ## Documentation
 
-The REST API documentation can be found on [OpenDocRouter](https://www.opendocrouter.ai/docs). The full API of this library can be found in [api.md](api.md).
+The REST API documentation can be found on [developers.llamaindex.ai](https://developers.llamaindex.ai/). The full API of this library can be found in [api.md](api.md).
 
 ## Installation
 
 ```sh
-pip install git+https://github.com/run-llama/opendocrouter-python.git
+# install from PyPI
+pip install opendocrouter
 ```
 
 ## Usage
@@ -72,7 +78,8 @@ By default, the async client uses `httpx` for HTTP requests. However, for improv
 You can enable this by installing `aiohttp`:
 
 ```sh
-pip install 'opendocrouter[aiohttp] @ git+https://github.com/run-llama/opendocrouter-python.git'
+# install from PyPI
+pip install opendocrouter[aiohttp]
 ```
 
 Then you can enable it by instantiating the client with `http_client=DefaultAioHttpClient()`:
@@ -249,9 +256,9 @@ parse = response.parse()  # get the object that `parse.get()` would have returne
 print(parse.id)
 ```
 
-These methods return an [`APIResponse`](https://github.com/run-llama/opendocrouter-python/tree/main/src/opendocrouter/_response.py) object.
+These methods return an [`APIResponse`](https://github.com/run-llama/opendocrouter-py/tree/main/src/opendocrouter/_response.py) object.
 
-The async client returns an [`AsyncAPIResponse`](https://github.com/run-llama/opendocrouter-python/tree/main/src/opendocrouter/_response.py) with the same structure, the only difference being `await`able methods for reading the response content.
+The async client returns an [`AsyncAPIResponse`](https://github.com/run-llama/opendocrouter-py/tree/main/src/opendocrouter/_response.py) with the same structure, the only difference being `await`able methods for reading the response content.
 
 #### `.with_streaming_response`
 
@@ -270,6 +277,40 @@ with client.parse.with_streaming_response.get(
 ```
 
 The context manager is required so that the response will reliably be closed.
+
+### Making custom/undocumented requests
+
+This library is typed for convenient access to the documented API.
+
+If you need to access undocumented endpoints, params, or response properties, the library can still be used.
+
+#### Undocumented endpoints
+
+To make requests to undocumented endpoints, you can make requests using `client.get`, `client.post`, and other
+http verbs. Options on the client will be respected (such as retries) when making this request.
+
+```py
+import httpx
+
+response = client.post(
+    "/foo",
+    cast_to=httpx.Response,
+    body={"my_param": True},
+)
+
+print(response.headers.get("x-foo"))
+```
+
+#### Undocumented request params
+
+If you want to explicitly send an extra param, you can do so with the `extra_query`, `extra_body`, and `extra_headers` request
+options.
+
+#### Undocumented response properties
+
+To access undocumented response properties, you can access the extra fields like `response.unknown_prop`. You
+can also get all the extra fields on the Pydantic model as a dict with
+[`response.model_extra`](https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel.model_extra).
 
 ### Configuring the HTTP client
 
@@ -315,23 +356,25 @@ with OpenDocRouter() as client:
 
 ## Versioning
 
-This library is distributed only from this Git repository. It is not published to PyPI and has no
-releases, tags, or changelog, so `pip install git+https://...` always installs the current tip of the
-default branch. To pin an exact revision, append a commit SHA:
+This package generally follows [SemVer](https://semver.org/spec/v2.0.0.html) conventions, though certain backwards-incompatible changes may be released as minor versions:
 
-    pip install 'git+https://github.com/run-llama/opendocrouter-python.git@<commit-sha>'
+1. Changes that only affect static types, without breaking runtime behavior.
+2. Changes to library internals which are technically public but not intended or documented for external use. _(Please open a GitHub issue to let us know if you are relying on such internals.)_
+3. Changes that we do not expect to impact the vast majority of users in practice.
 
-Backwards-incompatible changes can land on the default branch, so pin a SHA if you need a stable surface.
+We take backwards-compatibility seriously and work hard to ensure you can rely on a smooth upgrade experience.
 
-We are keen for your feedback; please open an [issue](https://www.github.com/run-llama/opendocrouter-python/issues) with questions, bugs, or suggestions.
+We are keen for your feedback; please open an [issue](https://www.github.com/run-llama/opendocrouter-py/issues) with questions, bugs, or suggestions.
 
-### Determining the installed revision
+### Determining the installed version
 
-`opendocrouter.__version__` is a fixed placeholder (`0.0.1`) and never changes. Because the library
-is installed from git, use pip to see which commit you have:
+If you've upgraded to the latest version but aren't seeing any new features you were expecting then your python environment is likely still using an older version.
 
-```sh
-pip freeze | grep opendocrouter
+You can determine the version that is being used at runtime with:
+
+```py
+import opendocrouter
+print(opendocrouter.__version__)
 ```
 
 ## Requirements
