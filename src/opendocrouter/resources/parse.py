@@ -19,7 +19,7 @@ from .._response import (
 )
 from .._base_client import make_request_options
 from ..types.parse_record import ParseRecord
-from ..types.parse_result import ParseResult
+from ..types.parse_create_response import ParseCreateResponse
 from ..types.parse_delete_response import ParseDeleteResponse
 
 __all__ = ["ParseResource", "AsyncParseResource"]
@@ -62,7 +62,7 @@ class ParseResource(SyncAPIResource):
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> ParseResult:
+    ) -> ParseCreateResponse:
         """
         `mode: "sync"` (the default) parses the document in this request and returns 200
         with every page, up to the model's `max_sync_pages`. `mode: "async"` returns 202
@@ -116,7 +116,7 @@ class ParseResource(SyncAPIResource):
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
-            cast_to=ParseResult,
+            cast_to=ParseCreateResponse,
         )
 
     def delete(
@@ -254,7 +254,7 @@ class AsyncParseResource(AsyncAPIResource):
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> ParseResult:
+    ) -> ParseCreateResponse:
         """
         `mode: "sync"` (the default) parses the document in this request and returns 200
         with every page, up to the model's `max_sync_pages`. `mode: "async"` returns 202
@@ -308,7 +308,7 @@ class AsyncParseResource(AsyncAPIResource):
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
-            cast_to=ParseResult,
+            cast_to=ParseCreateResponse,
         )
 
     async def delete(

@@ -3,12 +3,12 @@
 Types:
 
 ```python
-from opendocrouter.types import ParseRecord, ParseResult, ParseDeleteResponse
+from opendocrouter.types import ParseRecord, ParseCreateResponse, ParseDeleteResponse
 ```
 
 Methods:
 
-- <code title="post /v1/parse">client.parse.<a href="./src/opendocrouter/resources/parse.py">create</a>(\*\*<a href="src/opendocrouter/types/parse_create_params.py">params</a>) -> <a href="./src/opendocrouter/types/parse_result.py">ParseResult</a></code>
+- <code title="post /v1/parse">client.parse.<a href="./src/opendocrouter/resources/parse.py">create</a>(\*\*<a href="src/opendocrouter/types/parse_create_params.py">params</a>) -> <a href="./src/opendocrouter/types/parse_create_response.py">ParseCreateResponse</a></code>
 - <code title="delete /v1/parse/{id}">client.parse.<a href="./src/opendocrouter/resources/parse.py">delete</a>(id) -> <a href="./src/opendocrouter/types/parse_delete_response.py">ParseDeleteResponse</a></code>
 - <code title="get /v1/parse/{id}">client.parse.<a href="./src/opendocrouter/resources/parse.py">get</a>(id, \*\*<a href="src/opendocrouter/types/parse_get_params.py">params</a>) -> <a href="./src/opendocrouter/types/parse_record.py">ParseRecord</a></code>
 

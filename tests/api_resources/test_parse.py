@@ -9,7 +9,11 @@ import pytest
 
 from tests.utils import assert_matches_type
 from opendocrouter import OpenDocRouter, AsyncOpenDocRouter
-from opendocrouter.types import ParseRecord, ParseResult, ParseDeleteResponse
+from opendocrouter.types import (
+    ParseRecord,
+    ParseCreateResponse,
+    ParseDeleteResponse,
+)
 
 base_url = os.environ.get("TEST_API_BASE_URL", "http://127.0.0.1:4010")
 
@@ -24,7 +28,7 @@ class TestParse:
             document={"url": "url"},
             model="google/gemini-3-flash",
         )
-        assert_matches_type(ParseResult, parse, path=["response"])
+        assert_matches_type(ParseCreateResponse, parse, path=["response"])
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
@@ -37,7 +41,7 @@ class TestParse:
             mode="sync",
             pages="1-3,7",
         )
-        assert_matches_type(ParseResult, parse, path=["response"])
+        assert_matches_type(ParseCreateResponse, parse, path=["response"])
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
@@ -50,7 +54,7 @@ class TestParse:
         assert response.is_closed is True
         assert response.http_request.headers.get("X-Stainless-Lang") == "python"
         parse = response.parse()
-        assert_matches_type(ParseResult, parse, path=["response"])
+        assert_matches_type(ParseCreateResponse, parse, path=["response"])
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
@@ -63,7 +67,7 @@ class TestParse:
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
 
             parse = response.parse()
-            assert_matches_type(ParseResult, parse, path=["response"])
+            assert_matches_type(ParseCreateResponse, parse, path=["response"])
 
         assert cast(Any, response.is_closed) is True
 
@@ -174,7 +178,7 @@ class TestAsyncParse:
             document={"url": "url"},
             model="google/gemini-3-flash",
         )
-        assert_matches_type(ParseResult, parse, path=["response"])
+        assert_matches_type(ParseCreateResponse, parse, path=["response"])
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
@@ -187,7 +191,7 @@ class TestAsyncParse:
             mode="sync",
             pages="1-3,7",
         )
-        assert_matches_type(ParseResult, parse, path=["response"])
+        assert_matches_type(ParseCreateResponse, parse, path=["response"])
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
@@ -200,7 +204,7 @@ class TestAsyncParse:
         assert response.is_closed is True
         assert response.http_request.headers.get("X-Stainless-Lang") == "python"
         parse = await response.parse()
-        assert_matches_type(ParseResult, parse, path=["response"])
+        assert_matches_type(ParseCreateResponse, parse, path=["response"])
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
@@ -213,7 +217,7 @@ class TestAsyncParse:
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
 
             parse = await response.parse()
-            assert_matches_type(ParseResult, parse, path=["response"])
+            assert_matches_type(ParseCreateResponse, parse, path=["response"])
 
         assert cast(Any, response.is_closed) is True
 

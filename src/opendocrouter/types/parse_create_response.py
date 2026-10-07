@@ -9,7 +9,7 @@ from .._utils import PropertyInfo
 from .._models import BaseModel
 
 __all__ = [
-    "ParseResult",
+    "ParseCreateResponse",
     "Page",
     "PageOkPage",
     "PageOkPageUsage",
@@ -193,7 +193,7 @@ class Usage(BaseModel):
     output_tokens: int
 
 
-class ParseResult(BaseModel):
+class ParseCreateResponse(BaseModel):
     id: str
     """For `GET /v1/parse/{id}`."""
 

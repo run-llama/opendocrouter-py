@@ -26,11 +26,11 @@ client = OpenDocRouter(
     api_key=os.environ.get("OPEN_DOC_ROUTER_API_KEY"),  # This is the default and can be omitted
 )
 
-parse_result = client.parse.create(
+parse = client.parse.create(
     document={"url": "https://arxiv.org/pdf/1706.03762"},
     model="google/gemini-3-flash",
 )
-print(parse_result.id)
+print(parse.id)
 ```
 
 While you can provide an `api_key` keyword argument,
@@ -53,11 +53,11 @@ client = AsyncOpenDocRouter(
 
 
 async def main() -> None:
-    parse_result = await client.parse.create(
+    parse = await client.parse.create(
         document={"url": "https://arxiv.org/pdf/1706.03762"},
         model="google/gemini-3-flash",
     )
-    print(parse_result.id)
+    print(parse.id)
 
 
 asyncio.run(main())
@@ -89,11 +89,11 @@ async def main() -> None:
         api_key=os.environ.get("OPEN_DOC_ROUTER_API_KEY"),  # This is the default and can be omitted
         http_client=DefaultAioHttpClient(),
     ) as client:
-        parse_result = await client.parse.create(
+        parse = await client.parse.create(
             document={"url": "https://arxiv.org/pdf/1706.03762"},
             model="google/gemini-3-flash",
         )
-        print(parse_result.id)
+        print(parse.id)
 
 
 asyncio.run(main())
