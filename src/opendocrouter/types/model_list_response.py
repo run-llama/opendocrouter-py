@@ -4,7 +4,19 @@ from typing import List, Optional
 
 from .._models import BaseModel
 
-__all__ = ["ModelListResponse", "Data", "DataParsebench", "DataPricePerMillionTokens"]
+__all__ = ["ModelListResponse", "Data", "DataPageLatency", "DataParsebench", "DataPricePerMillionTokens"]
+
+
+class DataPageLatency(BaseModel):
+    """
+    How long one page takes on this version, from its most recent successful pages (up to 200, within 30 days). Pages in a request run in parallel. Null until enough pages are measured.
+    """
+
+    p50_seconds: float
+
+    p90_seconds: float
+
+    pages_measured: int
 
 
 class DataParsebench(BaseModel):
@@ -42,6 +54,13 @@ class Data(BaseModel):
     used on ParseBench. An estimate; your pages may differ. Null until benchmarked.
     """
 
+    cold_starts: bool
+    """True for models on GPUs we start on demand.
+
+    After the model sits idle, a request waits up to 45 seconds for one to start, or
+    fails with `model_starting` if it takes longer, without being charged.
+    """
+
     max_charge_per_page_usd: float
     """The most one page can be charged, which is what a request holds per page."""
 
@@ -49,6 +68,13 @@ class Data(BaseModel):
     """Most pages a `mode: "sync"` request can take."""
 
     name: str
+
+    page_latency: DataPageLatency
+    """
+    How long one page takes on this version, from its most recent successful pages
+    (up to 200, within 30 days). Pages in a request run in parallel. Null until
+    enough pages are measured.
+    """
 
     parsebench: DataParsebench
     """ParseBench scores for this version. Null while benchmarking."""
