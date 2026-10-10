@@ -9,14 +9,12 @@ __all__ = ["ModelListResponse", "Data", "DataPageLatency", "DataParsebench", "Da
 
 class DataPageLatency(BaseModel):
     """
-    How long one page takes on this version, from its most recent successful pages (up to 200, within 30 days). Pages in a request run in parallel. Null until enough pages are measured.
+    How long one page takes on this version, from its most recent successful pages (up to 1,000, within 30 days). Pages in a request run in parallel. Null until enough pages are measured.
     """
 
     p50_seconds: float
 
     p90_seconds: float
-
-    pages_measured: int
 
 
 class DataParsebench(BaseModel):
@@ -72,7 +70,7 @@ class Data(BaseModel):
     page_latency: DataPageLatency
     """
     How long one page takes on this version, from its most recent successful pages
-    (up to 200, within 30 days). Pages in a request run in parallel. Null until
+    (up to 1,000, within 30 days). Pages in a request run in parallel. Null until
     enough pages are measured.
     """
 
